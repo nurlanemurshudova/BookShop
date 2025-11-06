@@ -74,15 +74,6 @@
                     <div class="card-body card shadow right-sidebar-item">
                         <div class="form-group">
                             <label>Kitablar:</label>
-                            @* <div id="checkboxes2" class="checkboxes">
-                                @foreach (var book in ViewData["Books"] as IEnumerable<Book>)
-                                {
-                                    <label for="book" class="select_label">
-                                        <input type="checkbox" class="checkbox" value="@book.Id" name="bookIds" id="@book.Name" />@book.Name
-                                        <span class="select_label-icon"></span>
-                                    </label>
-                                }
-                            </div> *@
                             <div id="checkboxes2" class="checkboxes">
                                 @foreach (var book in ViewData["Books"] as IEnumerable<Book>)
                                 {
