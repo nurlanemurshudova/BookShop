@@ -1,32 +1,35 @@
-using BookShopWeb.Models;
+using BookShopWeb.ViewModels;
+using Business.Abstract;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace BookShopWeb.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IBookService _bookService;
+        private readonly IAuthorService _authorService;
+        private readonly IBookAuthorService _bookAuthorService;
+        public HomeController(IBookService bookService,IAuthorService authorService, IBookAuthorService bookAuthorService)
         {
-            _logger = logger;
+            _bookService = bookService;
+            _authorService = authorService;
+            _bookAuthorService = bookAuthorService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var bookData = _bookService.GetAll().Data;
+            var authorData = _authorService.GetAll().Data;
+            var bookAuthorData = _bookAuthorService.GetAll().Data;
+
+            HomeViewModel model = new ()
+            {
+                Books = bookData,
+                Authors = authorData,
+                BookAuthors = bookAuthorData
+            };
+            return View(model);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

@@ -12,6 +12,7 @@ namespace Entities.Concrete.TableModels
         public int BookId { get; set; }
         public Book Book { get; set; }
         public int AuthorId { get; set; }
+        //public string AuthorName { get; set; }
         public Author Author { get; set; }
     }
 }

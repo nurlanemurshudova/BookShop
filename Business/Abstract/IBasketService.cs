@@ -10,5 +10,6 @@ namespace Business.Abstract
         IResult Delete(int id);
         IDataResult<List<Basket>> GetAll();
         IDataResult<Basket> GetById(int id);
+        IDataResult<Basket> GetByUserId(int userId);
     }
 }

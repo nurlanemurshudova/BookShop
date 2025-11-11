@@ -3,5 +3,9 @@ using Entities.Concrete.TableModels;
 
 namespace DataAccess.Abstract
 {
-    public interface IBasketDal : IBaseRepository<Basket> { }
+    public interface IBasketDal : IBaseRepository<Basket>
+    {
+        List<Basket> GetAllWithBasket();
+        Basket GetByUserId(int userId);
+    }
 }

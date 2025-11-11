@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete
 {
-    public class AuthorDal : BaseRepository<Author, ApplicationDbContext>
+    public class AuthorDal : BaseRepository<Author, ApplicationDbContext>,IAuthorDal
     {
     }
 }

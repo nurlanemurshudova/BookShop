@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IBookDal : IBaseRepository<Book>
     {
+        List<Book> GetAllWithAuthors();
     }
 }

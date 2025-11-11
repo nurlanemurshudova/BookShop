@@ -2,24 +2,24 @@
 using Business.Concrete;
 using Entities.Concrete.TableModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.Eventing.Reader;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BookShopWeb.Areas.Dashboard.Controllers
 {
     [Area("Dashboard")]
     public class AuthorController : Controller
     {
-        //private readonly IAuthorService _authorService;
-        //public AuthorController(IAuthorService authorService)
-        //{
-        //    _authorService = authorService;
-        //}
-        AuthorManager _authorService = new();
-        BookManager _bookService = new();
+        private readonly IAuthorService _authorService;
+        private readonly IBookService _bookService;
+        public AuthorController(IAuthorService authorService, IBookService bookService)
+        {
+            _authorService = authorService;
+            _bookService = bookService;
+        }
+
+        //AuthorManager _authorService = new();
+        //BookManager _bookService = new();
         public IActionResult Index()
         {
-            //var data = _authorService.GetAll().Data;
             var data = _authorService.GetAll().Data;
             return View(data);
         }
@@ -27,44 +27,32 @@ namespace BookShopWeb.Areas.Dashboard.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["Books"] = _bookService.GetAll().Data;
+            //ViewData["Books"] = _bookService.GetAll().Data;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Author author, List<int> SelectedBookIds)
+        public IActionResult Create(Author author)
         {
-            var result = _authorService.AddAuthorWithBooks(author, SelectedBookIds);
+            var result = _authorService.Add(author);
 
-            if (!result.IsSuccess)
+            if (result.IsSuccess)
             {
-                ModelState.AddModelError("", result.Message);
-                ViewData["Books"] = _bookService.GetAll().Data;
-                return View(author);
+                return RedirectToAction("Index");
             }
 
-            return RedirectToAction("Index");
-        }
+            return View(author);
 
+
+        }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            //var data = _authorService.GetById(id).Data;
-            //return View(data);
-            var classResult = _authorService.GetById(id).Data; ;
-            var selectedBookIds = new List<int>();
-            if (classResult.BookAuthors != null)
-            {
-                selectedBookIds = classResult.BookAuthors.Select(ba => ba.BookId).ToList();
-            }
-            ViewData["Books"] = _bookService.GetAll().Data;
-            ViewData["SelectedBookIds"] = selectedBookIds;
-
-            return View(classResult);
-
-
+            var data = _authorService.GetById(id).Data;
+            return View(data);
         }
+
         [HttpPost]
         public IActionResult Edit(Author author)
         {

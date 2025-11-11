@@ -3,5 +3,8 @@ using Entities.Concrete.TableModels;
 
 namespace DataAccess.Abstract
 {
-    public interface IUserDal : IBaseRepository<User> { }
+    public interface IUserDal : IBaseRepository<User>
+    {
+        List<User> GetAllWithBasket();
+    }
 }

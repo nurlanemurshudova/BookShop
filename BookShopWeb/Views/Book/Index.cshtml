@@ -1,0 +1,145 @@
+﻿@model BookViewModel
+
+<!-- Page Header Start -->
+<div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Books</h1>
+        <div class="d-inline-flex">
+            <p class="m-0"><a href="/">Home</a></p>
+            <p class="m-0 px-2">-</p>
+            <p class="m-0">Books</p>
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+<section id="best-selling-items" class="position-relative padding-large ">
+    <div class="container">
+        <div class="section-title d-md-flex justify-content-between align-items-center mb-4">
+            <h3 class="d-flex align-items-center">Books</h3>
+            <a href="index.html" class="btn">View All</a>
+        </div>
+        <div class="position-absolute top-50 end-0 pe-0 pe-xxl-5 me-0 me-xxl-5 swiper-next product-slider-button-next">
+            <svg class="chevron-forward-circle d-flex justify-content-center align-items-center p-2" width="80" height="80">
+                <use xlink:href="#alt-arrow-right-outline"></use>
+            </svg>
+        </div>
+        <div class="position-absolute top-50 start-0 ps-0 ps-xxl-5 ms-0 ms-xxl-5 swiper-prev product-slider-button-prev">
+            <svg class="chevron-back-circle d-flex justify-content-center align-items-center p-2" width="80" height="80">
+                <use xlink:href="#alt-arrow-left-outline"></use>
+            </svg>
+        </div>
+        <div class="swiper product-swiper">
+            <div class="swiper-wrapper">
+                @foreach (var item in Model.Books)
+                {
+                    <div class="swiper-slide">
+
+
+                        <div class="card position-relative p-4 border rounded-3">
+                            <div class="position-absolute">
+                                <p class="bg-primary py-1 px-3 fs-6 text-white rounded-2">@item.DiscountRate% off</p>
+                            </div>
+                            <img src="@item.PhotoUrl" class="img-fluid shadow-sm" alt="product item">
+                            <h6 class="mt-4 mb-0 fw-bold"><a href="index.html">@item.Name</a></h6>
+                            <div class="review-content d-flex">
+
+                                @if (item.BookAuthors != null)
+                                {
+                                    @foreach (var author in Model.BookAuthors)
+                                    {
+                                        @if (item.Id == author.BookId)
+                                        {
+                                            @* <p class="my-2 me-2 fs-6 text-black-50">@author.AuthorId</p> *@
+
+
+                                            @foreach (var authorNames in Model.Authors)
+                                            {
+                                                @if (author.AuthorId == authorNames.Id)
+                                                {
+
+                                                    <p class="my-2 me-2 fs-6 text-black-50">@authorNames.Name</p>
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                <div class="rating text-warning d-flex align-items-center">
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="price-section d-flex align-items-baseline mb-2">
+
+                                <span class="text-dark text-decoration-line-through me-3 fs-6">
+                                    $ @item.Price
+                                </span>
+
+                                <span class="price text-primary fw-bold mb-2 fs-5">$ @(@item.Price - (@item.Price * item.DiscountRate / 100))</span>
+                            </div>
+
+                            <div class="card-concern position-absolute start-0 end-0 d-flex gap-2">
+                                <button type="button" class="btn btn-dark add-to-basket" data-id="@item.Id">
+                                    <svg class="cart">
+                                        <use xlink:href="#cart"></use>
+                                    </svg>
+                                </button>
+                            </div>
+
+
+                            
+
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+<script>
+    $(document).on("click", ".add-to-basket", function () {
+        var bookId = $(this).data("id");
+
+        $.ajax({
+            url: '/Book/AddToBasket',
+            type: 'POST',
+            data: { bookId: bookId },
+            success: function (res) {
+                if (res.success) {
+                    alert("Məhsul səbətə əlavə olundu!");
+                } else if (res.redirectUrl) {
+                    window.location.href = res.redirectUrl;
+                } else {
+                    alert(res.message || "Xəta baş verdi.");
+                }
+            },
+            error: function () {
+                alert("Xəta baş verdi.");
+            }
+        });
+    });
+</script>
+

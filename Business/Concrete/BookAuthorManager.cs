@@ -2,6 +2,7 @@
 using Business.BaseMessages;
 using Core.Results.Abstract;
 using Core.Results.Concrete;
+using DataAccess.Abstract;
 using DataAccess.Concrete;
 using Entities.Concrete.TableModels;
 using System;
@@ -14,7 +15,14 @@ namespace Business.Concrete
 {
     public class BookAuthorManager : IBookAuthorService
     {
-        BookAuthorDal _bookAuthorDal = new();
+        private readonly IBookAuthorDal _bookAuthorDal;
+
+        public BookAuthorManager(IBookAuthorDal bookAuthorDal)
+        {
+            _bookAuthorDal = bookAuthorDal;
+        }
+
+        //BookAuthorDal _bookAuthorDal = new();
 
         public IResult Add(BookAuthor entity)
         {
@@ -24,22 +32,29 @@ namespace Business.Concrete
 
         public IResult Delete(int id)
         {
-            throw new NotImplementedException();
+            var data = GetById(id).Data;
+            data.Deleted = id;
+
+            _bookAuthorDal.Update(data);
+            return new SuccessResult(UIMessages.Deleted_MESSAGE);
         }
 
         public IDataResult<List<BookAuthor>> GetAll()
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<List<BookAuthor>>(_bookAuthorDal.GetAll(x => x.Deleted == 0));
         }
 
         public IDataResult<BookAuthor> GetById(int id)
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<BookAuthor>(_bookAuthorDal.GetById(id));
         }
 
         public IResult Update(BookAuthor entity)
         {
-            throw new NotImplementedException();
+            entity.LastUpdatedDate = DateTime.Now;
+            _bookAuthorDal.Update(entity);
+
+            return new SuccessResult(UIMessages.UPDATE_MESSAGE);
         }
     }
 }

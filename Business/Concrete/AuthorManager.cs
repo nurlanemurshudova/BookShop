@@ -17,34 +17,39 @@ namespace Business.Concrete
 {
     public class AuthorManager : IAuthorService
     {
-        //private readonly IAuthorDal _authorDal;
+        private readonly IAuthorDal _authorDal;
+        private readonly IBookAuthorDal _bookAuthorDal;
 
-        //public AuthorManager(IAuthorDal authorDal)
-        //{
-        //    _authorDal = authorDal;
-        //}
-        AuthorDal _authorDal = new();
-        BookAuthorDal _bookAuthorDal = new();
+        public AuthorManager(IAuthorDal authorDal, IBookAuthorDal bookAuthorDal)
+        {
+            _authorDal = authorDal;
+            _bookAuthorDal = bookAuthorDal;
+        }
+        //AuthorDal _authorDal = new();
+        //BookAuthorDal _bookAuthorDal = new();
 
 
 
         public IResult AddAuthorWithBooks(Author author, List<int> bookIds)
         {
+
+            _authorDal.Add(author);
             author.BookAuthors = new List<BookAuthor>();
 
             if (bookIds != null && bookIds.Any())
             {
                 foreach (var bookId in bookIds)
                 {
-                    author.BookAuthors.Add(new BookAuthor
+                    BookAuthor bookAuthor = new()
                     {
                         BookId = bookId,
-                        Author = author
-                    });
+                        AuthorId = author.Id
+                        //AuthorName = author.Name
+                    };
+                    _bookAuthorDal.Add(bookAuthor);
                 }
             }
 
-            _authorDal.Add(author);
             return new SuccessResult(UIMessages.ADDED_MESSAGE);
         }
 
