@@ -1,7 +1,9 @@
 ﻿using BookShopWeb.ViewModels;
 using Business.Abstract;
 using Entities.Concrete.TableModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BookShopWeb.Controllers
 {
@@ -37,20 +39,18 @@ namespace BookShopWeb.Controllers
         }
 
 
-
+        [Authorize(Roles = "User")]
         [HttpPost]
         public IActionResult AddToBasket(int bookId)
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            var basketResult = _basketService.GetByUserId(userId.Value);
+            var basketResult = _basketService.GetByUserId(userId);
             var basket = basketResult?.Data;
 
             if (basket == null)
             {
-                basket = new Basket { UserId = userId.Value };
+                basket = new Basket { UserId = userId };
                 _basketService.Add(basket);
             }
 
@@ -64,13 +64,12 @@ namespace BookShopWeb.Controllers
             }
             else
             {
-
                 var deletedItem = basket.Items.FirstOrDefault(x => x.BookId == bookId && x.Deleted != 0);
 
                 if (deletedItem != null)
                 {
-                    deletedItem.Deleted = 0; 
-                    deletedItem.Quantity = 1; 
+                    deletedItem.Deleted = 0;
+                    deletedItem.Quantity = 1;
                     deletedItem.LastUpdatedDate = DateTime.Now;
                     _basketItemService.Update(deletedItem);
                 }
@@ -78,7 +77,7 @@ namespace BookShopWeb.Controllers
                 {
                     var book = _bookService.GetById(bookId).Data;
                     if (book == null)
-                        return Json(new { success = false, message = "Book not found" });
+                        return RedirectToAction("Index", "Basket");
 
                     decimal discountFactor = 1 - ((decimal)book.DiscountRate / 100);
                     decimal discountedPrice = book.Price * discountFactor;

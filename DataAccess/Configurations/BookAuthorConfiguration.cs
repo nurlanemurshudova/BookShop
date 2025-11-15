@@ -10,13 +10,6 @@ public class BookAuthorConfiguration : IEntityTypeConfiguration<BookAuthor>
     {
         builder.ToTable("BookAuthors");
 
-
-        //builder.HasKey(x => new { x.BookId, x.AuthorId });
-
-        //builder.Property(x => x.Id)
-        //    .UseIdentityColumn(seed: DefaultConstantValue.DEFAULT_PRIMARY_INCREMENT_VALUE, increment: 1);
-
-
         builder.Property(x => x.Id)
                 .UseIdentityColumn(seed: DefaultConstantValue.DEFAULT_PRIMARY_INCREMENT_VALUE, increment: 1);
 

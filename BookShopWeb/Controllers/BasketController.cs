@@ -1,13 +1,18 @@
 ﻿using Business.Abstract;
 using Entities.Concrete.TableModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims; 
 
 namespace BookShopWeb.Controllers
 {
+    [Authorize(Roles ="User")]
     public class BasketController : Controller
     {
         private readonly IBasketService _basketService;
         private readonly IBasketItemService _basketItemService;
+
         public BasketController(IBasketService basketService, IBasketItemService basketItemService)
         {
             _basketService = basketService;
@@ -16,12 +21,14 @@ namespace BookShopWeb.Controllers
 
         public IActionResult Index()
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            // Basketi userId ilə çəkirik
-            var basketResult = _basketService.GetByUserId(userId.Value);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var basketResult = _basketService.GetByUserId(userId);
             var basket = basketResult.Data;
 
             if (basket == null || basket.Items == null || !basket.Items.Any())
@@ -32,6 +39,7 @@ namespace BookShopWeb.Controllers
 
             return View(basket.Items.Where(item => item.Deleted == 0).ToList());
         }
+
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -41,5 +49,22 @@ namespace BookShopWeb.Controllers
             return View(result);
         }
 
+        [HttpPost]
+        public IActionResult UpdateQuantity(int id, string actionType)
+        {
+            var data = _basketItemService.GetById(id).Data;
+            if (data == null)
+            {
+                ViewBag.Message = "Məlumat tapılmadı.";
+            }
+            if (actionType == "increase")
+                data.Quantity++;
+            else if (actionType == "decrease" && data.Quantity > 1)
+                data.Quantity--;
+
+            _basketItemService.Update(data);
+
+            return RedirectToAction("Index");
+        }
     }
 }

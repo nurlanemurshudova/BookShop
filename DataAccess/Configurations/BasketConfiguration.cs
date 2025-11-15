@@ -20,7 +20,7 @@ public class BasketConfiguration : IEntityTypeConfiguration<Basket>
             .HasMany(b => b.Items)
             .WithOne(bi => bi.Basket)
             .HasForeignKey(bi => bi.BasketId)
-            .OnDelete(DeleteBehavior.Cascade); // Sepet silinirse içindeki öğeler de silinsin.
+            .OnDelete(DeleteBehavior.Cascade);
 
 
     }

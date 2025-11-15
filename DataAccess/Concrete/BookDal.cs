@@ -16,19 +16,12 @@ namespace DataAccess.Concrete
         }
         public List<Book> GetAllWithAuthors()
         {
-            // Məlumat bazası kontekstini (DbContext) fərz edirik ki, DI vasitəsilə alırsınız (_context)
 
             var data = _context.Books
                                .Where(b => b.Deleted == 0)
-
-                               // 1. Book-dan BookAuthor ortaq cədvəlinə keçid et
                                .Include(b => b.BookAuthors)
-
-                               // 2. BookAuthor-dan Author entity-sinə keçid et (ThenInclude)
                                .ThenInclude(ba => ba.Author)
-
                                .ToList();
-
             return data;
 
         }

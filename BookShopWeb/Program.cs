@@ -1,8 +1,10 @@
-﻿using Business.Abstract;
+﻿
+using Business.Abstract;
 using Business.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using DataAccess.Context;
+using Microsoft.AspNetCore.Authentication.Cookies; 
 
 namespace BookShopWeb
 {
@@ -12,16 +14,18 @@ namespace BookShopWeb
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Account/Login";
+                    options.AccessDeniedPath = "/Account/Login";
+                    options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                    options.SlidingExpiration = true;
+                });
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<ApplicationDbContext>();
-
-            builder.Services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); 
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
 
             builder.Services.AddScoped<IAuthorDal, AuthorDal>();
             builder.Services.AddScoped<IAuthorService, AuthorManager>();
@@ -44,7 +48,7 @@ namespace BookShopWeb
 
             var app = builder.Build();
 
-            
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -56,12 +60,9 @@ namespace BookShopWeb
 
             app.UseRouting();
 
-            
-            app.UseSession();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -72,6 +73,7 @@ namespace BookShopWeb
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
 
             app.Run();
         }

@@ -1,11 +1,13 @@
 ﻿using Business.Abstract;
 using Business.Concrete;
 using Entities.Concrete.TableModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShopWeb.Areas.Dashboard.Controllers
 {
     [Area("Dashboard")]
+    [Authorize(Roles = "Admin")]
     public class BookController : Controller
     {
         private readonly IAuthorService _authorService;

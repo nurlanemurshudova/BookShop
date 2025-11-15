@@ -264,10 +264,10 @@
                                         </svg>
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
-                                    @if (Context.Session.GetInt32("UserId") != null)
+                                    @if (User.Identity.IsAuthenticated)
                                     {
-                                        <!-- Əgər user login olubsa, Logout göstər -->
                                         <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
                                             <button type="submit"
                                                     class="btn btn-link text-dark"
@@ -277,18 +277,15 @@
                                                 </svg>
                                                 Logout
                                             </button>
-
-
                                         </form>
                                     }
                                     else
                                     {
-                                        <!-- Əgər login olmayıbsa, Login/Register göstər -->
                                         <a class="nav-link" asp-controller="Account" asp-action="Login">
                                             <svg class="icon">
                                                 <use xlink:href="#user"></use>
                                             </svg>
-                                            Login   
+                                            Login
                                         </a>
                                         <a class="nav-link" asp-controller="Account" asp-action="Register">
 
@@ -296,11 +293,9 @@
                                     }
                                 </li>
 
-
                                 <li class="nav-item cart-dropdown dropdown">
-                                    @if (Context.Session.GetInt32("UserId") != null)
+                                    @if (User.Identity.IsAuthenticated)
                                     {
-                                        <!-- User login olub → basket səhifəsinə keçid -->
                                         <a class="nav-link" asp-controller="Basket" asp-action="Index">
                                             <svg class="cart">
                                                 <use xlink:href="#cart"></use>
@@ -310,7 +305,6 @@
                                     }
                                     else
                                     {
-                                        <!-- User login olmayıb → login səhifəsinə yönləndir -->
                                         <a class="nav-link" asp-controller="Account" asp-action="Login">
                                             <svg class="cart">
                                                 <use xlink:href="#cart"></use>

@@ -92,16 +92,21 @@
                                 <span class="price text-primary fw-bold mb-2 fs-5">$ @(@item.Price - (@item.Price * item.DiscountRate / 100))</span>
                             </div>
 
+
                             <div class="card-concern position-absolute start-0 end-0 d-flex gap-2">
-                                <button type="button" class="btn btn-dark add-to-basket" data-id="@item.Id">
-                                    <svg class="cart">
-                                        <use xlink:href="#cart"></use>
-                                    </svg>
-                                </button>
+                                <form asp-controller="Book" asp-action="AddToBasket" method="post">
+                                    <input type="hidden" name="bookId" value="@item.Id" />
+
+                                    <button type="submit" class="btn btn-dark add-to-basket">
+                                        <svg class="cart">
+                                            <use xlink:href="#cart"></use>
+                                        </svg>
+                                    </button>
+                                </form>
                             </div>
 
 
-                            
+
 
                         </div>
                     </div>
@@ -118,28 +123,4 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-
-<script>
-    $(document).on("click", ".add-to-basket", function () {
-        var bookId = $(this).data("id");
-
-        $.ajax({
-            url: '/Book/AddToBasket',
-            type: 'POST',
-            data: { bookId: bookId },
-            success: function (res) {
-                if (res.success) {
-                    alert("Məhsul səbətə əlavə olundu!");
-                } else if (res.redirectUrl) {
-                    window.location.href = res.redirectUrl;
-                } else {
-                    alert(res.message || "Xəta baş verdi.");
-                }
-            },
-            error: function () {
-                alert("Xəta baş verdi.");
-            }
-        });
-    });
-</script>
 

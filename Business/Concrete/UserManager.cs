@@ -31,7 +31,6 @@ namespace Business.Concrete
             _userDal.Add(entity);
             if (entity.Basket == null)
             {
-                //entity.Basket = new Basket();
                 Basket basket = new()
                 {
                     UserId = entity.Id,
@@ -39,7 +38,6 @@ namespace Business.Concrete
                 };
                 _basketDal.Add(basket);
             }
-            //entity.Basket.User = entity;
             return new SuccessResult(UIMessages.ADDED_MESSAGE);
         }
 

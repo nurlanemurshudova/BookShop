@@ -38,29 +38,27 @@
                             <td class="align-middle">@item.PriceAtTimeOfAddition.ToString("C")</td>
                             <td class="align-middle">
                                 <div class="d-flex justify-content-center align-items-center" style="gap: 5px;">
-                                    <form asp-action="DecreaseQuantity" method="post" style="display:inline;">
-                                        <input type="hidden" name="basketItemId" value="@item.Id" />
-                                        <button class="btn btn-sm btn-primary py-1 px-2">-</button>
+
+                                    <form asp-action="UpdateQuantity" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="actionType" value="decrease" /> <button class="btn btn-sm btn-primary py-1 px-2">-</button>
                                     </form>
+
                                     <input type="text" class="form-control form-control-sm text-center" value="@item.Quantity" style="width: 40px; padding: 0.25rem;" readonly>
-                                    <form asp-action="IncreaseQuantity" method="post" style="display:inline;">
-                                        <input type="hidden" name="basketItemId" value="@item.Id" />
-                                        <button class="btn btn-sm btn-primary py-1 px-2">+</button>
+
+                                    <form asp-action="UpdateQuantity" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="actionType" value="increase" /> <button class="btn btn-sm btn-primary py-1 px-2">+</button>
                                     </form>
+
                                 </div>
                             </td>
                             <td class="align-middle">@(@item.PriceAtTimeOfAddition* item.Quantity)</td>
-                            @* <td class="align-middle">
-                                <form asp-action="RemoveItem" method="post">
-                                    <input type="hidden" name="basketItemId" value="@item.Id" />
-                                    <button class="btn btn-sm btn-danger py-1 px-2"><i class="fa fa-times"></i></button>
-                                </form>
-                            </td> *@
                             <td class="align-middle">
                                 <a item-value="@item.Id" item-title="@item.Book.Name" class="btnDelete">
                                     <i class="fa-solid fa-trash"></i>
                                 </a>
-
+                                
                             </td>
                         </tr>
                     }

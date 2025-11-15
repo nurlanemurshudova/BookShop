@@ -1,8 +1,11 @@
 ﻿using Business.Abstract;
 using Entities.Concrete.TableModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BookShopWeb.Controllers
 {
@@ -22,27 +25,44 @@ namespace BookShopWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(Login model)
+        public async Task<IActionResult> Login(Login model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
             var usersResult = _userService.GetAll();
-
             var user = usersResult.Data
                 .FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
 
             if (user == null)
             {
-                ViewBag.Message = "Email və ya şifrə yanlışdır!";
+                ViewBag.Message = "Email və ya şifrə yanlışdır";
                 return View(model);
             }
 
-            HttpContext.Session.SetInt32("UserId", user.Id);
-            HttpContext.Session.SetString("Username", user.Username);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
 
-            var basket = user.Basket;
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
+
+            if (user.Role == "Admin")
+                return RedirectToAction("Index", "Home", new { area = "Dashboard" });
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
 
@@ -58,12 +78,12 @@ namespace BookShopWeb.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var existingUser = _userService.GetAll().Data
+            var user = _userService.GetAll().Data
                 .FirstOrDefault(u => u.Email == model.Email);
 
-            if (existingUser != null)
+            if (user != null)
             {
-                ViewBag.Message = "Bu email artıq qeydiyyatdan keçib!";
+                ViewBag.Message = "Bu email qeydiyyatdan keçib";
                 return View(model);
             }
 
@@ -78,18 +98,11 @@ namespace BookShopWeb.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Qeydiyyat uğurla tamamlandı!";
                 return RedirectToAction("Login");
             }
 
-            ViewBag.Message = "Qeydiyyat zamanı xəta baş verdi!";
+            ViewBag.Message = "Xəta baş verdi";
             return View(model);
-        }
-        [HttpPost]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
         }
 
     }

@@ -44,7 +44,6 @@ namespace Business.Concrete
                     {
                         BookId = bookId,
                         AuthorId = author.Id
-                        //AuthorName = author.Name
                     };
                     _bookAuthorDal.Add(bookAuthor);
                 }
